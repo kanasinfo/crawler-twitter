@@ -6,20 +6,18 @@ import java.util.List;
  * 推文主内容
  * Created by Devid on 2016/12/2.
  */
-public class TwitterMain {
+public class TwitterMan {
     private String twitterId;   // 推文ID
+    private String username;    // 用户名
     private String userId;      // 用户ID
     private String Content;     // 推文内容
     private String pushTime;    // 发布时间
-    private List<TweetUser> tweetUsers;       // 转推人列表
+    private List<TwitterMan> tweetUsers;       // 转推人列表
     private List<Comment> comments; //所有评论
-    private List<LikeUser> likeUsers;        // 喜欢人列表
-    public TwitterMain(String userId, String twitterId) {
-        this.twitterId = twitterId;
-        this.userId = userId;
-    }
+    private List<TwitterMan> likeUsers;        // 喜欢人列表
+    
 
-    public TwitterMain() {
+    public TwitterMan() {
     }
 
     public String getTwitterId() {
@@ -28,6 +26,14 @@ public class TwitterMain {
 
     public void setTwitterId(String twitterId) {
         this.twitterId = twitterId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getUserId() {
@@ -54,11 +60,11 @@ public class TwitterMain {
         this.pushTime = pushTime;
     }
 
-    public List<TweetUser> getTweetUsers() {
+    public List<TwitterMan> getTweetUsers() {
         return tweetUsers;
     }
 
-    public void setTweetUsers(List<TweetUser> tweetUsers) {
+    public void setTweetUsers(List<TwitterMan> tweetUsers) {
         this.tweetUsers = tweetUsers;
     }
 
@@ -70,11 +76,11 @@ public class TwitterMain {
         this.comments = comments;
     }
 
-    public List<LikeUser> getLikeUsers() {
+    public List<TwitterMan> getLikeUsers() {
         return likeUsers;
     }
 
-    public void setLikeUsers(List<LikeUser> likeUsers) {
+    public void setLikeUsers(List<TwitterMan> likeUsers) {
         this.likeUsers = likeUsers;
     }
 }

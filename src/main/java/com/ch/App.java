@@ -2,7 +2,7 @@ package com.ch;
 
 
 import com.ch.bean.Comment;
-import com.ch.bean.TwitterMain;
+import com.ch.bean.TwitterMan;
 import com.google.gson.Gson;
 import org.jsoup.nodes.Element;
 
@@ -20,16 +20,19 @@ public class App {
         String userId = "jason5ng32";
         String twitterId = "687951546491908097";
         String url = String.format("https://twitter.com/%s/status/%s", userId, twitterId);
-        TwitterMain twitterMain = new TwitterMain(userId, twitterId);
+        TwitterMan twitterMan = new TwitterMan(userId, twitterId);
         
         FetchTwitterService fetchTwitterService = new FetchTwitterService();
         Element element = FetchUtils.getByUrl(url).body();
 
-        twitterMain = fetchTwitterService.fetchMain(element, twitterMain);
+        twitterMan = fetchTwitterService.fetchMain(element, twitterMan);
         System.out.println("正文：");
-        System.out.println(new Gson().toJson(twitterMain));
+        System.out.println(new Gson().toJson(twitterMan));
         List<Comment> comments = new ArrayList<>();
         fetchTwitterService.fetchComment(element, comments);
-        twitterMain.setComments(comments);
+        twitterMan.setComments(comments);
+        
+        
+        
     }
 }

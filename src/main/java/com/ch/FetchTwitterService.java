@@ -1,9 +1,7 @@
 package com.ch;
 
 import com.ch.bean.Comment;
-import com.ch.bean.LikeUser;
-import com.ch.bean.TweetUser;
-import com.ch.bean.TwitterMain;
+import com.ch.bean.TwitterMan;
 import com.ch.utils.GsonUtils;
 import com.ch.utils.StringKit;
 import com.google.gson.Gson;
@@ -29,21 +27,21 @@ public class FetchTwitterService {
     /**
      * 获取内容正文
      */
-    public TwitterMain fetchMain(Element element, TwitterMain twitterMain){
+    public TwitterMan fetchMain(Element element, TwitterMan twitterMan){
         String twitterContent = element.select("div.permalink-tweet-container").select("div.js-tweet-text-container").text();
         String pushTime = element.select("div.permalink-tweet-container").select("div.client-and-actions > span.metadata > span").text();
-        twitterMain.setContent(twitterContent);
-        twitterMain.setPushTime(pushTime);
-        twitterMain.setTweetUsers(fetchTweetUsers(twitterMain.getTwitterId()));
-        twitterMain.setLikeUsers(fetchLikeUsers(twitterMain.getTwitterId()));
-        return twitterMain;
+        twitterMan.setContent(twitterContent);
+        twitterMan.setPushTime(pushTime);
+        twitterMan.setTweetUsers(fetchTweetUsers(twitterMan.getTwitterId()));
+        twitterMan.setLikeUsers(fetchLikeUsers(twitterMan.getTwitterId()));
+        return twitterMan;
     }
 
     /**
      * 获取喜欢人列表
      */
-    private List<LikeUser> fetchLikeUsers(String twitterId) {
-        List<LikeUser> likeUsers = new ArrayList<>();
+    private List<TwitterMan> fetchLikeUsers(String twitterId) {
+        List<TwitterMan> likeUsers = new ArrayList<>();
         String tweetUrl = "https://twitter.com/i/activity/favorited_popup?id=%s";
         try {
             String contentJson = FetchUtils.httpGet(String.format(tweetUrl, twitterId));
@@ -54,7 +52,9 @@ public class FetchTwitterService {
                 Element element = iterator.next();
                 String username = element.select("strong.fullname ").text();
                 String userId = element.select("a.js-user-profile-link").attr("href").replace("/", "");
-                LikeUser user = new LikeUser(userId, username);
+                TwitterMan user = new TwitterMan();
+                user.setUsername(username);
+                user.setUserId(userId);
                 likeUsers.add(user);
             }
         } catch (IOException e) {
@@ -65,11 +65,9 @@ public class FetchTwitterService {
 
     /**
      * 获取转推人的列表
-     * @param twitterId
-     * @return
      */
-    private List<TweetUser> fetchTweetUsers(String twitterId) {
-        List<TweetUser> tweetUsers = new ArrayList<>();
+    private List<TwitterMan> fetchTweetUsers(String twitterId) {
+        List<TwitterMan> tweetUsers = new ArrayList<>();
         String tweetUrl = "https://twitter.com/i/activity/retweeted_popup?id=%s";
         try {
             String contentJson = FetchUtils.httpGet(String.format(tweetUrl, twitterId));
@@ -80,7 +78,11 @@ public class FetchTwitterService {
                 Element element = iterator.next();
                 String username = element.select("strong.fullname ").text();
                 String userId = element.select("a.js-user-profile-link").attr("href").replace("/", "");
-                TweetUser user = new TweetUser(userId, username);
+                String content = element.select("p.bio").text();
+                TwitterMan user = new TwitterMan();
+                user.setUserId(userId);
+                user.setUsername(username);
+                user.setContent(content);
                 tweetUsers.add(user);
             }
         } catch (IOException e) {
@@ -173,7 +175,7 @@ public class FetchTwitterService {
         comment.setCmtId(cmtId);
         
         // 获取评论喜欢
-        List<LikeUser> likeUsers = fetchLikeUsers(cmtId);
+        List<TwitterMan> likeUsers = fetchLikeUsers(cmtId);
         comment.setLikeUsers(likeUsers);
         return comment;
     }

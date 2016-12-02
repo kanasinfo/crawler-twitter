@@ -13,7 +13,7 @@ public class Comment {
     private String content;
     private String cmtId;   // 评论id
     private Date cmtTime; // 评论时间
-    private List<LikeUser> likeUsers;   // 喜欢的用户
+    private List<TwitterMan> likeUsers;   // 喜欢的用户
 
     public Comment(String id, String username, String content) {
         this.id = id;
@@ -64,11 +64,11 @@ public class Comment {
         this.cmtTime = cmtTime;
     }
 
-    public List<LikeUser> getLikeUsers() {
+    public List<TwitterMan> getLikeUsers() {
         return likeUsers;
     }
 
-    public void setLikeUsers(List<LikeUser> likeUsers) {
+    public void setLikeUsers(List<TwitterMan> likeUsers) {
         this.likeUsers = likeUsers;
     }
 }
