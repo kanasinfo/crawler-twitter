@@ -1,6 +1,11 @@
 package com.ch;
 
+import com.ch.bean.TweetUser;
+import com.ch.bean.TwitterMain;
+import com.ch.utils.GsonUtils;
+import com.ch.utils.StringKit;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -9,9 +14,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by Devid on 2016/11/28.
@@ -19,16 +25,49 @@ import java.util.Objects;
 public class FetchService {
     private static final Logger logger = Logger.getLogger(FetchService.class);
     private static final String domain = "https://twitter.com";
+    private static final String MORE_CMT_URL = "https://twitter.com/i/jason5ng32/conversation/687951546491908097?include_available_features=1&include_entities=1&max_position=%s&reset_error_state=false";
+    
+    
     /**
-     * 获取正文
+     * 获取内容正文
      */
-    public String fetchMain(Element element){
+    public TwitterMain fetchMain(Element element, TwitterMain twitterMain){
         String twitterContent = element.select("div.permalink-tweet-container").select("div.js-tweet-text-container").text();
-        return twitterContent;
+        String pushTime = element.select("div.permalink-tweet-container").select("div.client-and-actions > span.metadata > span").text();
+        twitterMain.setContent(twitterContent);
+        twitterMain.setPushTime(pushTime);
+        twitterMain.setTweetUsers(fetchTweetUsers(twitterMain.getTwitterId()));
+        return twitterMain;
     }
 
     /**
-     * 获取评论
+     * 获取转推人的列表
+     * @param twitterId
+     * @return
+     */
+    private List<TweetUser> fetchTweetUsers(String twitterId) {
+        List<TweetUser> tweetUsers = new ArrayList<>();
+        String tweetUrl = "https://twitter.com/i/activity/retweeted_popup?id=%s";
+        try {
+            String contentJson = FetchUtils.httpGet(String.format(tweetUrl, twitterId));
+            Map<String, String> map = GsonUtils.getGson().fromJson(contentJson, Map.class);
+            String html = StringKit.toString(map.get("htmlUsers"));
+            ListIterator<Element> iterator = Jsoup.parse(html).body().select("ol.activity-popup-users").select("li.js-stream-item").listIterator();
+            while (iterator.hasNext()) {
+                Element element = iterator.next();
+                String username = element.select("strong.fullname ").text();
+                String userId = element.select("a.js-user-profile-link").attr("href").replace("/", "");
+                TweetUser user = new TweetUser(userId, username);
+                tweetUsers.add(user);
+            }
+        } catch (IOException e) {
+            logger.info("获取转推人列表失败", e);
+        }
+        return tweetUsers;
+    }
+
+    /**
+     * 获取列表评论
      */
     public void fetchComment(Element element){
         Element cmtEle = element.select("div.stream-container").first();
@@ -41,6 +80,17 @@ public class FetchService {
             Element e = elements.next();
             getMainComment(e);
         }
+
+        // TODO 获取异步的数据
+        if (StringUtils.isNotBlank(minPosition)) {
+            try {
+                String moreJson = FetchUtils.httpGet(String.format(MORE_CMT_URL, minPosition));
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
     }
 
     private void getMainComment(Element e) {
@@ -68,10 +118,7 @@ public class FetchService {
                             while (iterator.hasNext())
                                 getMainComment(iterator.next());
                         }
-                        
                     }
-                    
-                    
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
