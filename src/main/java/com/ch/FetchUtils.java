@@ -46,8 +46,8 @@ public final class FetchUtils {
         return document;
     }
 
-    public static String httpGet(String moreUrl) throws IOException {
-        return IOUtils.toString(getHttpGet(moreUrl).getEntity().getContent(), "utf-8");
+    public static String httpGet(String url) throws IOException {
+        return IOUtils.toString(getHttpGet(url).getEntity().getContent(), "utf-8");
     }
 
 }

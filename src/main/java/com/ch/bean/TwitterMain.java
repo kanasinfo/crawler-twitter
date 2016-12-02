@@ -12,7 +12,8 @@ public class TwitterMain {
     private String Content;     // 推文内容
     private String pushTime;    // 发布时间
     private List<TweetUser> tweetUsers;       // 转推人列表
-
+    private List<Comment> comments; //所有评论
+    private List<LikeUser> likeUsers;        // 喜欢人列表
     public TwitterMain(String userId, String twitterId) {
         this.twitterId = twitterId;
         this.userId = userId;
@@ -59,5 +60,21 @@ public class TwitterMain {
 
     public void setTweetUsers(List<TweetUser> tweetUsers) {
         this.tweetUsers = tweetUsers;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<LikeUser> getLikeUsers() {
+        return likeUsers;
+    }
+
+    public void setLikeUsers(List<LikeUser> likeUsers) {
+        this.likeUsers = likeUsers;
     }
 }

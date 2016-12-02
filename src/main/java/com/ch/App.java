@@ -1,11 +1,14 @@
 package com.ch;
 
 
+import com.ch.bean.Comment;
 import com.ch.bean.TwitterMain;
 import com.google.gson.Gson;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Hello world!
@@ -19,12 +22,14 @@ public class App {
         String url = String.format("https://twitter.com/%s/status/%s", userId, twitterId);
         TwitterMain twitterMain = new TwitterMain(userId, twitterId);
         
-        FetchService fetchService = new FetchService();
+        FetchTwitterService fetchTwitterService = new FetchTwitterService();
         Element element = FetchUtils.getByUrl(url).body();
 
-        twitterMain = fetchService.fetchMain(element, twitterMain);
+        twitterMain = fetchTwitterService.fetchMain(element, twitterMain);
         System.out.println("正文：");
         System.out.println(new Gson().toJson(twitterMain));
-        fetchService.fetchComment(element);
+        List<Comment> comments = new ArrayList<>();
+        fetchTwitterService.fetchComment(element, comments);
+        twitterMain.setComments(comments);
     }
 }
