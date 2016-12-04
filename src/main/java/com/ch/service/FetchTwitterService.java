@@ -1,5 +1,6 @@
-package com.ch;
+package com.ch.service;
 
+import com.ch.FetchUtils;
 import com.ch.bean.Comment;
 import com.ch.bean.TwitterMan;
 import com.ch.utils.GsonUtils;
@@ -20,8 +21,8 @@ import java.util.*;
  */
 public class FetchTwitterService {
     private static final Logger logger = Logger.getLogger(FetchTwitterService.class);
-    private static final String domain = "https://twitter.com";
-    private static final String MORE_CMT_URL = "https://twitter.com/i/jason5ng32/conversation/687951546491908097?include_available_features=1&include_entities=1&max_position=%s&reset_error_state=false";
+    private static final String domain = "http://twitter.com";
+    private static final String MORE_CMT_URL = "http://twitter.com/i/jason5ng32/conversation/687951546491908097?include_available_features=1&include_entities=1&max_position=%s&reset_error_state=false";
     
     
     /**
@@ -42,7 +43,7 @@ public class FetchTwitterService {
      */
     private List<TwitterMan> fetchLikeUsers(String twitterId) {
         List<TwitterMan> likeUsers = new ArrayList<>();
-        String tweetUrl = "https://twitter.com/i/activity/favorited_popup?id=%s";
+        String tweetUrl = "http://twitter.com/i/activity/favorited_popup?id=%s";
         try {
             String contentJson = FetchUtils.httpGet(String.format(tweetUrl, twitterId));
             Map<String, String> map = GsonUtils.getGson().fromJson(contentJson, Map.class);
@@ -51,10 +52,12 @@ public class FetchTwitterService {
             while (iterator.hasNext()) {
                 Element element = iterator.next();
                 String username = element.select("strong.fullname ").text();
-                String userId = element.select("a.js-user-profile-link").attr("href").replace("/", "");
+                String account = element.select("a.js-user-profile-link").attr("href").replace("/", "");
+                String userId = element.select("a.js-user-profile-link").attr("data-user-id");
                 TwitterMan user = new TwitterMan();
-                user.setUsername(username);
                 user.setUserId(userId);
+                user.setUsername(username);
+                user.setAccount(account);
                 likeUsers.add(user);
             }
         } catch (IOException e) {
@@ -68,7 +71,7 @@ public class FetchTwitterService {
      */
     private List<TwitterMan> fetchTweetUsers(String twitterId) {
         List<TwitterMan> tweetUsers = new ArrayList<>();
-        String tweetUrl = "https://twitter.com/i/activity/retweeted_popup?id=%s";
+        String tweetUrl = "http://twitter.com/i/activity/retweeted_popup?id=%s";
         try {
             String contentJson = FetchUtils.httpGet(String.format(tweetUrl, twitterId));
             Map<String, String> map = GsonUtils.getGson().fromJson(contentJson, Map.class);
@@ -77,10 +80,12 @@ public class FetchTwitterService {
             while (iterator.hasNext()) {
                 Element element = iterator.next();
                 String username = element.select("strong.fullname ").text();
-                String userId = element.select("a.js-user-profile-link").attr("href").replace("/", "");
+                String userId = element.select("a.js-user-profile-link").attr("data-user-id");
+                String account = element.select("a.js-user-profile-link").attr("href").replace("/", "");
                 String content = element.select("p.bio").text();
                 TwitterMan user = new TwitterMan();
                 user.setUserId(userId);
+                user.setAccount(account);
                 user.setUsername(username);
                 user.setContent(content);
                 tweetUsers.add(user);

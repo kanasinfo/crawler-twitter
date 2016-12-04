@@ -33,7 +33,7 @@ public final class FetchUtils {
     private static CloseableHttpResponse getHttpGet(String url) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet get = new HttpGet(url);
-        HttpHost proxy = new HttpHost("localhost", 1080);
+        HttpHost proxy = new HttpHost("127.0.0.1", 1080);
         RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
         get.setConfig(config);
         CloseableHttpResponse response = httpclient.execute(get);

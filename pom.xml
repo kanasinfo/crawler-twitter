@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <username>crawler-twitter</username>
+    <tag>crawler-twitter</tag>
     <url>http://maven.apache.org</url>
 
     <properties>

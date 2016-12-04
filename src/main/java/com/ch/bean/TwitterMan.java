@@ -10,6 +10,7 @@ public class TwitterMan {
     private String twitterId;   // 推文ID
     private String username;    // 用户名
     private String userId;      // 用户ID
+    private String account;     // 用户账号
     private String Content;     // 推文内容
     private String pushTime;    // 发布时间
     private List<TwitterMan> tweetUsers;       // 转推人列表
@@ -82,5 +83,13 @@ public class TwitterMan {
 
     public void setLikeUsers(List<TwitterMan> likeUsers) {
         this.likeUsers = likeUsers;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 }
